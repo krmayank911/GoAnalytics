@@ -1,5 +1,11 @@
 package `in`.go.analytics_sdk.internals
 
+import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.events.AnalyticsEvent
+import `in`.go.analytics_sdk.internals.events.EventStore
+import `in`.go.analytics_sdk.internals.events.EventUploader
+import `in`.go.analytics_sdk.internals.identity.SessionManager
+import `in`.go.analytics_sdk.internals.identity.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

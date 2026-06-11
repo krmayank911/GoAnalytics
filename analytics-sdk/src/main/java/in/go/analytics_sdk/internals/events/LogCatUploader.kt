@@ -1,12 +1,6 @@
-package `in`.go.analytics_sdk.internals
+package `in`.go.analytics_sdk.internals.events
 
 import android.util.Log
-
-internal interface EventUploader {
-
-    fun upload(events: List<AnalyticsEvent>): Boolean
-
-}
 
 internal class LogCatUploader: EventUploader {
 

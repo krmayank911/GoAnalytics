@@ -6,7 +6,7 @@ import android.os.Bundle
 import `in`.go.analytics.Events.APP_CLOSED
 import `in`.go.analytics.Events.APP_OPENED
 import `in`.go.analytics_sdk.GoAnalytics
-import `in`.go.analytics_sdk.internals.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
 
 class TestApplication: Application(), Application.ActivityLifecycleCallbacks {
 

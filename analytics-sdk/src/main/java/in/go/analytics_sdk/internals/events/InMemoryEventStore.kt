@@ -1,15 +1,7 @@
-package `in`.go.analytics_sdk.internals
+package `in`.go.analytics_sdk.internals.events
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-
-internal interface EventStore {
-    suspend fun add(event: AnalyticsEvent)
-    suspend fun getAll(): List<AnalyticsEvent>
-    suspend fun getBatch(batchSize: Int): List<AnalyticsEvent>
-    suspend fun size(): Int
-    suspend fun remove(events: List<AnalyticsEvent>)
-}
 
 internal class InMemoryEventStore : EventStore {
 

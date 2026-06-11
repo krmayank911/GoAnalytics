@@ -1,4 +1,4 @@
-package `in`.go.analytics_sdk.internals
+package `in`.go.analytics_sdk.internals.identity
 
 class UserManager {
 

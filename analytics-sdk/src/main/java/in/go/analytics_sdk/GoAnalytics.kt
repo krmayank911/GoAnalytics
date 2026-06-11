@@ -2,12 +2,12 @@ package `in`.go.analytics_sdk
 
 import android.content.Context
 import android.util.Log
-import `in`.go.analytics_sdk.internals.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
 import `in`.go.analytics_sdk.internals.AnalyticsManager
-import `in`.go.analytics_sdk.internals.InMemoryEventStore
-import `in`.go.analytics_sdk.internals.LogCatUploader
-import `in`.go.analytics_sdk.internals.SessionManager
-import `in`.go.analytics_sdk.internals.UserManager
+import `in`.go.analytics_sdk.internals.events.InMemoryEventStore
+import `in`.go.analytics_sdk.internals.events.LogCatUploader
+import `in`.go.analytics_sdk.internals.identity.SessionManager
+import `in`.go.analytics_sdk.internals.identity.UserManager
 import kotlin.isInitialized
 
 object GoAnalytics {
