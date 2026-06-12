@@ -2,12 +2,9 @@ package `in`.go.analytics_sdk
 
 import android.content.Context
 import android.util.Log
+import `in`.go.analytics_sdk.internals.AnalyticsFactory
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
 import `in`.go.analytics_sdk.internals.AnalyticsManager
-import `in`.go.analytics_sdk.internals.events.InMemoryEventStore
-import `in`.go.analytics_sdk.internals.events.LogCatUploader
-import `in`.go.analytics_sdk.internals.identity.SessionManager
-import `in`.go.analytics_sdk.internals.identity.UserManager
 import kotlin.isInitialized
 
 object GoAnalytics {
@@ -26,14 +23,7 @@ object GoAnalytics {
             Log.w("AnalyticsSDK", "Ignoring duplicate initialize() call.")
             return
         }
-
-        analyticsManager = AnalyticsManager(
-            store = InMemoryEventStore(),
-            sessionManager = SessionManager(),
-            userManager = UserManager(),
-            uploader = LogCatUploader(),
-            analyticsConfig = config
-        )
+        analyticsManager = AnalyticsFactory.create(context, config)
     }
 
     fun identify(userId: String) {

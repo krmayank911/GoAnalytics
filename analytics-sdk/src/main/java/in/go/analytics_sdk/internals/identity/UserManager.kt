@@ -1,6 +1,6 @@
 package `in`.go.analytics_sdk.internals.identity
 
-class UserManager {
+internal class UserManager {
 
     var userId: String? = null
         private set
