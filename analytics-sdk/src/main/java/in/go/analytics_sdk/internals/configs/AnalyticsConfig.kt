@@ -7,4 +7,5 @@ data class AnalyticsConfig(
     val flushIntervalMillis: Long = 30_000L,
     val maxEventAgeMillis: Long = 7.days.inWholeMilliseconds,
     val retryDelayMillis: Long = 5_000L,
+    val flushBudget: FlushBudget = FlushBudget(),
 )

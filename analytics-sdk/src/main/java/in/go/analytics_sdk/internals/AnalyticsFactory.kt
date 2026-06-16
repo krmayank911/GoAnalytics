@@ -2,6 +2,8 @@ package `in`.go.analytics_sdk.internals
 
 import android.content.Context
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.GoClock
+import `in`.go.analytics_sdk.internals.configs.SystemClock
 import `in`.go.analytics_sdk.internals.database.AnalyticsDatabase
 import `in`.go.analytics_sdk.internals.events.store.EventStore
 import `in`.go.analytics_sdk.internals.events.uploader.EventUploader
@@ -29,7 +31,8 @@ internal object AnalyticsFactory {
                 store = RoomEventStore(database.eventsDao()),
                 uploader = RetrofitUploader(api = NetworkClient.getAnalyticsApi()),
                 config = config,
-                dispatcher = Dispatchers.IO
+                dispatcher = Dispatchers.IO,
+                clock = SystemClock()
             )
         )
     }
@@ -41,5 +44,6 @@ internal data class AnalyticsDependencies(
     val sessionManager: SessionManager = SessionManager(),
     val userManager: UserManager = UserManager(),
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val config: AnalyticsConfig = AnalyticsConfig()
+    val config: AnalyticsConfig = AnalyticsConfig(),
+    val clock: GoClock = SystemClock()
 )

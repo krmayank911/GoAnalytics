@@ -7,6 +7,7 @@ import `in`.go.analytics.Events.APP_CLOSED
 import `in`.go.analytics.Events.APP_OPENED
 import `in`.go.analytics_sdk.GoAnalytics
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.FlushBudget
 
 class TestApplication: Application(), Application.ActivityLifecycleCallbacks {
 
@@ -18,7 +19,11 @@ class TestApplication: Application(), Application.ActivityLifecycleCallbacks {
             context = this,
             apiKey = "YOUR_API_KEY",
             config = AnalyticsConfig(
-                batchSize = 10
+                batchSize = 10,
+                flushBudget = FlushBudget(
+                    maxDurationMillis = 10_000L,
+                    maxBatches = 20
+                )
             )
         )
         GoAnalytics.identify("123")

@@ -2,6 +2,7 @@ package `in`.go.analytics_sdk.internals
 
 import android.util.Log
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.GoClock
 import `in`.go.analytics_sdk.internals.events.AnalyticsEvent
 import `in`.go.analytics_sdk.internals.events.FlushResult
 import `in`.go.analytics_sdk.internals.events.store.EventStore
@@ -29,6 +30,7 @@ internal class AnalyticsManager(
     private val sessionManager: SessionManager = dependencies.sessionManager
     private val uploader: EventUploader = dependencies.uploader
     private val analyticsConfig: AnalyticsConfig = dependencies.config
+    private val clock: GoClock = dependencies.clock
     private val dispatcher: CoroutineDispatcher = dependencies.dispatcher
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
     private val flushMutex = Mutex()
@@ -53,7 +55,7 @@ internal class AnalyticsManager(
             AnalyticsEvent(
                 event = event,
                 properties = properties ?: emptyMap(),
-                timestamp = System.currentTimeMillis(),
+                timestamp = clock.now(),
                 sessionId = sessionManager.sessionId,
                 userId = userManager.userId
             )
@@ -65,7 +67,7 @@ internal class AnalyticsManager(
     }
 
     fun flushAsync() {
-        if (flushBlockedUntil > System.currentTimeMillis()) {
+        if (flushBlockedUntil > clock.now()) {
             return
         }
         if (flushJob?.isActive == true) {
@@ -75,7 +77,7 @@ internal class AnalyticsManager(
             when (val result = flush()) {
                 is FlushResult.Completed -> {}
                 is FlushResult.RetryLater -> {
-                    flushBlockedUntil = System.currentTimeMillis() + result.delayMillis
+                    flushBlockedUntil = clock.now() + result.delayMillis
                 }
             }
         }
@@ -83,7 +85,22 @@ internal class AnalyticsManager(
 
     suspend fun flush(): FlushResult {
         flushMutex.withLock {
+
+            val start = clock.now()
+            var batches = 0
+
             while(store.size() > 0) {
+
+                if (clock.now() - start > analyticsConfig.flushBudget.maxDurationMillis) {
+                    logInfo("Flush Budget Exceeded: flush running for ${clock.now() - start}ms")
+                    break
+                }
+
+                if (batches >= analyticsConfig.flushBudget.maxBatches) {
+                    logInfo("Flush Budget Exceeded: $batches batches flushed")
+                    break
+                }
+
                 val batch = store.getBatch(analyticsConfig.batchSize)
                 when (val result = uploader.upload(batch)) {
                     is UploadResult.UploadSuccess -> {
@@ -108,6 +125,7 @@ internal class AnalyticsManager(
                     }
                 }
                 store.remove(batch)
+                batches++
             }
         }
         return FlushResult.Completed
