@@ -2,6 +2,7 @@ package `in`.go.analytics_sdk.internals.network
 
 import `in`.go.analytics_sdk.internals.events.uploader.UploadResult
 import kotlin.math.min
+import kotlin.random.Random
 
 internal class UploadFailureRetry(val minRetryDelayMillis: Long): RetryPolicy {
 
@@ -18,9 +19,10 @@ internal class UploadFailureRetry(val minRetryDelayMillis: Long): RetryPolicy {
     }
 
     override fun nextDelayMillis(retryCount: Int): Long {
+        val jitter = Random.nextLong(minRetryDelayMillis / 2)
         return min(
             minRetryDelayMillis * (1 shl retryCount),
             MAX_BACKOFF_MILLIS
-        )
+        ) + jitter
     }
 }

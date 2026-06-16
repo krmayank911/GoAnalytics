@@ -34,6 +34,7 @@ internal class AnalyticsManager(
     private val flushMutex = Mutex()
     private var flushJob: Job? = null
     private var retryCount = 0
+    private var flushBlockedUntil = 0L
     private val failureRetry by lazy {
         UploadFailureRetry(minRetryDelayMillis = analyticsConfig.retryDelayMillis)
     }
@@ -64,6 +65,9 @@ internal class AnalyticsManager(
     }
 
     fun flushAsync() {
+        if (flushBlockedUntil > System.currentTimeMillis()) {
+            return
+        }
         if (flushJob?.isActive == true) {
             return
         }
@@ -71,8 +75,7 @@ internal class AnalyticsManager(
             when (val result = flush()) {
                 is FlushResult.Completed -> {}
                 is FlushResult.RetryLater -> {
-                    delay(result.delayMillis)
-                    flushAsync()
+                    flushBlockedUntil = System.currentTimeMillis() + result.delayMillis
                 }
             }
         }
@@ -92,7 +95,9 @@ internal class AnalyticsManager(
                         retryCount++
 
                         return if (failureRetry.shouldRetry(result)) {
-                            FlushResult.RetryLater(failureRetry.nextDelayMillis(retryCount))
+                            FlushResult.RetryLater(
+                                result.retryAfter ?: failureRetry.nextDelayMillis(retryCount)
+                            )
                         } else {
                             FlushResult.Completed
                         }
