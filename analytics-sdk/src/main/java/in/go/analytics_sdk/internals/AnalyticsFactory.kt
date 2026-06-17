@@ -2,6 +2,7 @@ package `in`.go.analytics_sdk.internals
 
 import android.content.Context
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
+import `in`.go.analytics_sdk.internals.configs.AnalyticsConfigStore
 import `in`.go.analytics_sdk.internals.configs.GoClock
 import `in`.go.analytics_sdk.internals.configs.SystemClock
 import `in`.go.analytics_sdk.internals.database.AnalyticsDatabase
@@ -12,6 +13,8 @@ import `in`.go.analytics_sdk.internals.events.uploader.LogCatUploader
 import `in`.go.analytics_sdk.internals.events.store.RoomEventStore
 import `in`.go.analytics_sdk.internals.network.AnalyticsApi
 import `in`.go.analytics_sdk.internals.events.uploader.RetrofitUploader
+import `in`.go.analytics_sdk.internals.events.uploader.scheduler.SyncSchedular
+import `in`.go.analytics_sdk.internals.events.uploader.scheduler.WorkManagerScheduler
 import `in`.go.analytics_sdk.internals.identity.SessionManager
 import `in`.go.analytics_sdk.internals.identity.UserManager
 import `in`.go.analytics_sdk.internals.network.NetworkClient
@@ -32,7 +35,8 @@ internal object AnalyticsFactory {
                 uploader = RetrofitUploader(api = NetworkClient.getAnalyticsApi()),
                 config = config,
                 dispatcher = Dispatchers.IO,
-                clock = SystemClock()
+                clock = SystemClock(),
+                scheduler = WorkManagerScheduler(context)
             )
         )
     }
@@ -45,5 +49,6 @@ internal data class AnalyticsDependencies(
     val userManager: UserManager = UserManager(),
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val config: AnalyticsConfig = AnalyticsConfig(),
-    val clock: GoClock = SystemClock()
+    val clock: GoClock = SystemClock(),
+    val scheduler: SyncSchedular? = null
 )

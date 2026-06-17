@@ -5,6 +5,7 @@ import android.util.Log
 import `in`.go.analytics_sdk.internals.AnalyticsFactory
 import `in`.go.analytics_sdk.internals.configs.AnalyticsConfig
 import `in`.go.analytics_sdk.internals.AnalyticsManager
+import `in`.go.analytics_sdk.internals.configs.AnalyticsConfigStore
 import kotlin.isInitialized
 
 object GoAnalytics {
@@ -24,6 +25,14 @@ object GoAnalytics {
             return
         }
         analyticsManager = AnalyticsFactory.create(context, config)
+            .also {
+                AnalyticsConfigStore.save(context, config)
+                it.flushAsync()
+            }
+    }
+
+    internal fun isInitialized(): Boolean {
+        return ::analyticsManager.isInitialized
     }
 
     fun identify(userId: String) {

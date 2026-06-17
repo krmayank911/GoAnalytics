@@ -8,6 +8,7 @@ import `in`.go.analytics_sdk.internals.events.FlushResult
 import `in`.go.analytics_sdk.internals.events.store.EventStore
 import `in`.go.analytics_sdk.internals.events.uploader.EventUploader
 import `in`.go.analytics_sdk.internals.events.uploader.UploadResult
+import `in`.go.analytics_sdk.internals.events.uploader.scheduler.SyncSchedular
 import `in`.go.analytics_sdk.internals.identity.SessionManager
 import `in`.go.analytics_sdk.internals.identity.UserManager
 import `in`.go.analytics_sdk.internals.network.UploadFailureRetry
@@ -31,6 +32,7 @@ internal class AnalyticsManager(
     private val uploader: EventUploader = dependencies.uploader
     private val analyticsConfig: AnalyticsConfig = dependencies.config
     private val clock: GoClock = dependencies.clock
+    private val scheduler: SyncSchedular? = dependencies.scheduler
     private val dispatcher: CoroutineDispatcher = dependencies.dispatcher
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
     private val flushMutex = Mutex()
@@ -62,6 +64,7 @@ internal class AnalyticsManager(
         )
 
         if (store.size() >= analyticsConfig.batchSize) {
+            scheduler?.schedule()
             flushAsync()
         }
     }

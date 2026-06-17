@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.google.gson)
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
