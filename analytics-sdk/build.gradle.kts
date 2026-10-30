@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    id("maven-publish")
 }
+
+group = "in.go.analytics"
+version = "1.0.0"
 
 android {
     namespace = "in.go.analytics_sdk"
@@ -47,4 +51,25 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+}
+
+publishing {
+
+    publications {
+        create<MavenPublication>("release") {
+            groupId = group.toString()
+            artifactId = "analytics-sdk"
+            version = version.toString()
+            afterEvaluate {
+                from(
+                    components["release"]
+                )
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+
 }
